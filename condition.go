@@ -122,7 +122,8 @@ func NonNil[T any](param *T, f func(T) Condition) Condition {
 }
 
 func NonZero[T comparable](param T, f func(T) Condition) Condition {
-	if param == *new(T) {
+	var zero T
+	if param == zero {
 		return Condition{}
 	}
 
