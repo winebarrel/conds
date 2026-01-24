@@ -54,18 +54,18 @@ func TestC(t *testing.T) {
 			params: map[string]any{"bar": 100, "zoo": true},
 		},
 		{
-			c:      conds.C(`foo = @bar`, conds.NVX("bar", ptr("zoo"))),
+			c:      conds.C(`foo = @bar`, conds.XNV("bar", ptr("zoo"))),
 			stmt:   `foo = @bar`,
 			params: map[string]any{"bar": "zoo"},
 		},
 		{
-			c:      conds.C(`foo = @bar`, conds.NVX("bar", nilstr)),
+			c:      conds.C(`foo = @bar`, conds.XNV("bar", nilstr)),
 			stmt:   ``,
 			params: nil,
 			empty:  true,
 		},
 		{
-			c:      conds.C(`foo = @bar AND zoo = @baz`, conds.NV("bar", 100), conds.NVX("baz", nilint)),
+			c:      conds.C(`foo = @bar AND zoo = @baz`, conds.NV("bar", 100), conds.XNV("baz", nilint)),
 			stmt:   ``,
 			params: nil,
 			empty:  true,
@@ -108,7 +108,7 @@ func TestAND(t *testing.T) {
 			cs: []conds.Condition{
 				conds.C(`foo = "bar"`),
 				conds.C(`zoo = @baz`, conds.NV("bar", "zoo")),
-				conds.C(`hoge = @fuga`, conds.NVX("fuga", nilint)),
+				conds.C(`hoge = @fuga`, conds.XNV("fuga", nilint)),
 			},
 			stmt:   `foo = "bar" AND zoo = @baz`,
 			params: map[string]any{"bar": "zoo"},
@@ -176,7 +176,7 @@ func TestOR(t *testing.T) {
 			cs: []conds.Condition{
 				conds.C(`foo = "bar"`),
 				conds.C(`zoo = @baz`, conds.NV("bar", "zoo")),
-				conds.C(`hoge = @fuga`, conds.NVX("fuga", nilint)),
+				conds.C(`hoge = @fuga`, conds.XNV("fuga", nilint)),
 			},
 			stmt:   `foo = "bar" OR zoo = @baz`,
 			params: map[string]any{"bar": "zoo"},
@@ -244,7 +244,7 @@ func TestConditionAND(t *testing.T) {
 			cs: []conds.Condition{
 				conds.C(`foo = "bar"`),
 				conds.C(`zoo = @baz`, conds.NV("bar", "zoo")),
-				conds.C(`hoge = @fuga`, conds.NVX("fuga", nilint)),
+				conds.C(`hoge = @fuga`, conds.XNV("fuga", nilint)),
 			},
 			stmt:   `foo = "bar" AND zoo = @baz`,
 			params: map[string]any{"bar": "zoo"},
@@ -315,7 +315,7 @@ func TestConditionOR(t *testing.T) {
 			cs: []conds.Condition{
 				conds.C(`foo = "bar"`),
 				conds.C(`zoo = @baz`, conds.NV("bar", "zoo")),
-				conds.C(`hoge = @fuga`, conds.NVX("fuga", nilint)),
+				conds.C(`hoge = @fuga`, conds.XNV("fuga", nilint)),
 			},
 			stmt:   `foo = "bar" OR zoo = @baz`,
 			params: map[string]any{"bar": "zoo"},
@@ -364,7 +364,7 @@ func TestConditionAND_C(t *testing.T) {
 	c := conds.C(`foo = "bar"`).
 		AND_C(`zoo = @baz`, conds.NV("bar", "zoo")).
 		AND_C(`hoge = @fuga`, conds.NV("fuga", 100)).
-		AND_C(`hello = @world`, conds.NVX("world", nilstr))
+		AND_C(`hello = @world`, conds.XNV("world", nilstr))
 
 	stmt, params := c.StmtParams()
 	assert.Equal(t, `foo = "bar" AND zoo = @baz AND hoge = @fuga`, stmt)
@@ -375,7 +375,7 @@ func TestConditionOR_C(t *testing.T) {
 	c := conds.C(`foo = "bar"`).
 		OR_C(`zoo = @baz`, conds.NV("bar", "zoo")).
 		OR_C(`hoge = @fuga`, conds.NV("fuga", 100)).
-		OR_C(`hello = @world`, conds.NVX("world", nilint))
+		OR_C(`hello = @world`, conds.XNV("world", nilint))
 
 	stmt, params := c.StmtParams()
 	assert.Equal(t, `foo = "bar" OR zoo = @baz OR hoge = @fuga`, stmt)
