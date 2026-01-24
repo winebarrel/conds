@@ -101,6 +101,14 @@ func IF[T any](expr bool, cthen, celse T) T {
 	}
 }
 
+func IFF(expr bool, f func() Condition) Condition {
+	if !expr {
+		return Condition{}
+	}
+
+	return f()
+}
+
 func NonNil[T any](param *T, f func(T) Condition) Condition {
 	if param == nil {
 		return Condition{}

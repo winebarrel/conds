@@ -28,6 +28,13 @@ func TestIF(t *testing.T) {
 	assert.Equal(t, celse, conds.IF(false, cthen, celse))
 }
 
+func TestIFF(t *testing.T) {
+	cthen := conds.C("foo = @bar", conds.NV("bar", 100))
+	celse := conds.Empty()
+	assert.Equal(t, cthen, conds.IFF(true, func() conds.Condition { return cthen }))
+	assert.Equal(t, celse, conds.IFF(false, func() conds.Condition { return cthen }))
+}
+
 func TestNonNil(t *testing.T) {
 	var n = 100
 
