@@ -101,6 +101,10 @@ func IF[T any](expr bool, cthen, celse T) T {
 	}
 }
 
+func IFTHEN(expr bool, cthen Condition) Condition {
+	return IF(expr, cthen, Condition{})
+}
+
 func IFF(expr bool, f func() Condition) Condition {
 	if !expr {
 		return Condition{}
