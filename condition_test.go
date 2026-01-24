@@ -76,6 +76,51 @@ func TestNonNil(t *testing.T) {
 	}
 }
 
+func TestNonZero(t *testing.T) {
+	tests := []struct {
+		c      conds.Condition
+		stmt   string
+		params map[string]any
+		empty  bool
+	}{
+		{
+			c: conds.NonZero("str", func(v string) conds.Condition {
+				return conds.C("foo = @n", conds.NV("n", v))
+			}),
+			stmt:   `foo = @n`,
+			params: map[string]any{"n": "str"},
+		},
+		{
+			c: conds.NonZero("", func(v string) conds.Condition {
+				return conds.C("foo = @n", conds.NV("n", v))
+			}),
+			empty: true,
+		},
+		{
+			c: conds.NonZero(100, func(v int) conds.Condition {
+				return conds.C("foo = @n", conds.NV("n", v))
+			}),
+			stmt:   `foo = @n`,
+			params: map[string]any{"n": 100},
+		},
+		{
+			c: conds.NonZero(0, func(v int) conds.Condition {
+				return conds.C("foo = @n", conds.NV("n", v))
+			}),
+			empty: true,
+		},
+	}
+
+	for i, tt := range tests {
+		t.Run(fmt.Sprintf("%d: %#v", i, tt.c), func(t *testing.T) {
+			stmt, params := tt.c.StmtParams()
+			assert.Equal(t, tt.stmt, stmt)
+			assert.Equal(t, tt.params, params)
+			assert.Equal(t, tt.empty, tt.c.Empty())
+		})
+	}
+}
+
 func TestC(t *testing.T) {
 	tests := []struct {
 		c      conds.Condition
