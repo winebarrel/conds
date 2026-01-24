@@ -34,11 +34,10 @@ func main() {
 		AND_C("str = @s", c.NV("s", s)).
 		// XNV: Null value conditions are removed
 		AND_C("sval = @ns", c.XNV("ns", nilstr)).
-		OR_C(c.IF(nilnum == nil, "sval IS NULL", "sval = @nn"), c.NV("nn", nilnum))
 
 	stmt, params := w.StmtParams()
 
-	fmt.Println(stmt)   //=> "num = @n AND str = @s OR sval IS NULL"
+	fmt.Println(stmt)   //=> "num = @n AND str = @s"
 	fmt.Println(params) //=> map[n:100 nn:<nil> s:foo]
 }
 ```

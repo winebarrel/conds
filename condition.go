@@ -92,3 +92,11 @@ func join(op string, others ...Condition) Condition {
 		params: params,
 	}
 }
+
+func IF(expr bool, cthen, celse Condition) Condition {
+	if expr {
+		return cthen
+	} else {
+		return celse
+	}
+}
