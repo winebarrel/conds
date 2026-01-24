@@ -375,7 +375,7 @@ func TestConditionOR_C(t *testing.T) {
 	c := conds.C(`foo = "bar"`).
 		OR_C(`zoo = @baz`, conds.NV("bar", "zoo")).
 		OR_C(`hoge = @fuga`, conds.NV("fuga", 100)).
-		AND_C(`hello = @world`, conds.NVX("world", nilint))
+		OR_C(`hello = @world`, conds.NVX("world", nilint))
 
 	stmt, params := c.StmtParams()
 	assert.Equal(t, `foo = "bar" OR zoo = @baz OR hoge = @fuga`, stmt)
