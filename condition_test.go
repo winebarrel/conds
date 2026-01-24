@@ -28,6 +28,40 @@ func TestIF(t *testing.T) {
 	assert.Equal(t, celse, conds.IF(false, cthen, celse))
 }
 
+func TestNonNil(t *testing.T) {
+	var n = 100
+
+	tests := []struct {
+		c      conds.Condition
+		stmt   string
+		params map[string]any
+		empty  bool
+	}{
+		{
+			c: conds.NonNil(&n, func(v int) conds.Condition {
+				return conds.C("foo = @n", conds.NV("n", v))
+			}),
+			stmt:   `foo = @n`,
+			params: map[string]any{"n": 100},
+		},
+		{
+			c: conds.NonNil(nilint, func(v int) conds.Condition {
+				return conds.C("bar = @nn", conds.NV("nn", v))
+			}),
+			empty: true,
+		},
+	}
+
+	for i, tt := range tests {
+		t.Run(fmt.Sprintf("%d: %#v", i, tt.c), func(t *testing.T) {
+			stmt, params := tt.c.StmtParams()
+			assert.Equal(t, tt.stmt, stmt)
+			assert.Equal(t, tt.params, params)
+			assert.Equal(t, tt.empty, tt.c.Empty())
+		})
+	}
+}
+
 func TestC(t *testing.T) {
 	tests := []struct {
 		c      conds.Condition

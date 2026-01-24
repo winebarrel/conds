@@ -100,3 +100,11 @@ func IF(expr bool, cthen, celse Condition) Condition {
 		return celse
 	}
 }
+
+func NonNil[T any](param *T, f func(T) Condition) Condition {
+	if param == nil {
+		return Condition{}
+	}
+
+	return f(*param)
+}
