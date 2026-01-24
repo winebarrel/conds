@@ -368,7 +368,7 @@ func TestConditionAND_C(t *testing.T) {
 
 	stmt, params := c.StmtParams()
 	assert.Equal(t, `foo = "bar" AND zoo = @baz AND hoge = @fuga`, stmt)
-	assert.Equal(t, map[string]interface{}{"bar": "zoo", "fuga": 100}, params)
+	assert.Equal(t, map[string]any{"bar": "zoo", "fuga": 100}, params)
 }
 
 func TestConditionOR_C(t *testing.T) {
@@ -379,5 +379,5 @@ func TestConditionOR_C(t *testing.T) {
 
 	stmt, params := c.StmtParams()
 	assert.Equal(t, `foo = "bar" OR zoo = @baz OR hoge = @fuga`, stmt)
-	assert.Equal(t, map[string]interface{}{"bar": "zoo", "fuga": 100}, params)
+	assert.Equal(t, map[string]any{"bar": "zoo", "fuga": 100}, params)
 }
