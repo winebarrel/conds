@@ -93,15 +93,7 @@ func join(op string, others ...Condition) Condition {
 	}
 }
 
-func IF(expr bool, cthen, celse Condition) Condition {
-	if expr {
-		return cthen
-	} else {
-		return celse
-	}
-}
-
-func IFS(expr bool, cthen, celse string) string {
+func IF[T any](expr bool, cthen, celse T) T {
 	if expr {
 		return cthen
 	} else {

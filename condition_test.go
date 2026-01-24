@@ -28,11 +28,6 @@ func TestIF(t *testing.T) {
 	assert.Equal(t, celse, conds.IF(false, cthen, celse))
 }
 
-func TestIFS(t *testing.T) {
-	assert.Equal(t, "cthen", conds.IFS(true, "cthen", "celse"))
-	assert.Equal(t, "celse", conds.IFS(false, "cthen", "celse"))
-}
-
 func TestNonNil(t *testing.T) {
 	var n = 100
 
