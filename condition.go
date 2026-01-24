@@ -101,13 +101,16 @@ func IF[T any](expr bool, cthen, celse T) T {
 	}
 }
 
-func IFTHEN(expr bool, cthen Condition) Condition {
-	return IF(expr, cthen, Condition{})
+func IFTHEN[T any](expr bool, cthen T) T {
+	var zero T
+	return IF(expr, cthen, zero)
 }
 
-func IFF(expr bool, f func() Condition) Condition {
+func IFF[T any](expr bool, f func() T) T {
+	var zero T
+
 	if !expr {
-		return Condition{}
+		return zero
 	}
 
 	return f()
