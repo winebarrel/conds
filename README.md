@@ -1,5 +1,7 @@
 # conds
 
+[![CI](https://github.com/winebarrel/conds/actions/workflows/ci.yml/badge.svg)](https://github.com/winebarrel/conds/actions/workflows/ci.yml)
+
 cond is a tiny builder of where clause conditions.
 
 ## Installation
