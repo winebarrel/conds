@@ -29,8 +29,16 @@ func (c Condition) AND(other Condition) Condition {
 	return AND(c, other)
 }
 
+func (c Condition) AND_C(stmt string, nvs ...NamedValue) Condition {
+	return AND(c, C(stmt, nvs...))
+}
+
 func (c Condition) OR(other Condition) Condition {
 	return OR(c, other)
+}
+
+func (c Condition) OR_C(stmt string, nvs ...NamedValue) Condition {
+	return OR(c, C(stmt, nvs...))
 }
 
 /////////////////////////////////////////////////////////////////////
