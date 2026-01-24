@@ -2,6 +2,7 @@
 
 [![CI](https://github.com/winebarrel/conds/actions/workflows/ci.yml/badge.svg)](https://github.com/winebarrel/conds/actions/workflows/ci.yml)
 [![Go Reference](https://pkg.go.dev/badge/github.com/winebarrel/conds.svg)](https://pkg.go.dev/github.com/winebarrel/conds)
+[![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/winebarrel/conds)](https://pkg.go.dev/github.com/winebarrel/conds?tab=versions)
 
 cond is a tiny builder of where clause conditions.
 
