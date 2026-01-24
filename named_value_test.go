@@ -26,7 +26,7 @@ func TestNV(t *testing.T) {
 	}
 }
 
-func TestNVX(t *testing.T) {
+func TestXNV(t *testing.T) {
 	tests := []struct {
 		name     string
 		value    *any
@@ -39,7 +39,7 @@ func TestNVX(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.expected, func(t *testing.T) {
-			assert.Equal(t, tt.expected, fmt.Sprintf("%#v", conds.NVX(tt.name, tt.value)))
+			assert.Equal(t, tt.expected, fmt.Sprintf("%#v", conds.XNV(tt.name, tt.value)))
 		})
 	}
 }

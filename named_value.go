@@ -13,7 +13,7 @@ func NV(name string, value any) NamedValue {
 	return NamedValue{name: name, value: value}
 }
 
-func NVX[T any](name string, value *T) NamedValue {
+func XNV[T any](name string, value *T) NamedValue {
 	if value == nil {
 		return NamedValue{}
 	}
