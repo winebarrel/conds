@@ -21,6 +21,13 @@ func TestConditionEnclose(t *testing.T) {
 	assert.Equal(t, map[string]any{"bar": 100}, params)
 }
 
+func TestIF(t *testing.T) {
+	cthen := conds.C("foo = @bar", conds.NV("bar", 100))
+	celse := conds.C("zoo = @baz", conds.NV("baz", "FOO"))
+	assert.Equal(t, cthen, conds.IF(true, cthen, celse))
+	assert.Equal(t, celse, conds.IF(false, cthen, celse))
+}
+
 func TestC(t *testing.T) {
 	tests := []struct {
 		c      conds.Condition
