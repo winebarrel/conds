@@ -481,3 +481,11 @@ func TestConditionOR_C(t *testing.T) {
 	assert.Equal(t, `foo = "bar" OR zoo = @baz OR hoge = @fuga`, stmt)
 	assert.Equal(t, map[string]any{"bar": "zoo", "fuga": 100}, params)
 }
+
+func TestStmtParams(t *testing.T) {
+	type testMap map[string]any
+	c := conds.C("foo = @bar", conds.NV("bar", 100))
+	stmt, params := conds.StmtParams[testMap](c)
+	assert.Equal(t, "foo = @bar", stmt)
+	assert.Equal(t, testMap{"bar": 100}, params)
+}
