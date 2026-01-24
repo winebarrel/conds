@@ -132,3 +132,8 @@ func NonZero[T comparable](param T, f func(T) Condition) Condition {
 
 	return f(param)
 }
+
+func StmtParams[T ~map[string]any](c Condition) (string, T) {
+	stmt, params := c.StmtParams()
+	return stmt, T(params)
+}
