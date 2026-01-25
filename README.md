@@ -30,10 +30,10 @@ func main() {
 	var nilnum *int
 
 	w := c.
-		C("num = @n", c.NV("n", n)).
-		AND_C("str = @s", c.NV("s", s)).
-		// XNV: Null value conditions are removed
-		AND_C("sval = @ns", c.XNV("ns", nilstr)).
+		C("num = @n", c.V("n", n)).
+		AND_C("str = @s", c.V("s", s)).
+		// XV: Null value conditions are removed
+		AND_C("sval = @ns", c.XV("ns", nilstr)).
 
 	stmt, params := w.StmtParams()
 

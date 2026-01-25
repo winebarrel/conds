@@ -8,7 +8,7 @@ import (
 	"github.com/winebarrel/conds"
 )
 
-func TestNV(t *testing.T) {
+func TestV(t *testing.T) {
 	tests := []struct {
 		name     string
 		value    any
@@ -21,12 +21,12 @@ func TestNV(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.expected, func(t *testing.T) {
-			assert.Equal(t, tt.expected, fmt.Sprintf("%#v", conds.NV(tt.name, tt.value)))
+			assert.Equal(t, tt.expected, fmt.Sprintf("%#v", conds.V(tt.name, tt.value)))
 		})
 	}
 }
 
-func TestXNV(t *testing.T) {
+func TestXV(t *testing.T) {
 	tests := []struct {
 		name     string
 		value    *any
@@ -39,12 +39,12 @@ func TestXNV(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.expected, func(t *testing.T) {
-			assert.Equal(t, tt.expected, fmt.Sprintf("%#v", conds.XNV(tt.name, tt.value)))
+			assert.Equal(t, tt.expected, fmt.Sprintf("%#v", conds.XV(tt.name, tt.value)))
 		})
 	}
 }
 
-func TestNVMap(t *testing.T) {
+func TestVMap(t *testing.T) {
 	tests := []struct {
 		m     map[string]any
 		items []string
@@ -61,7 +61,7 @@ func TestNVMap(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(fmt.Sprintf("%#v", tt.m), func(t *testing.T) {
-			nvs := conds.NVMap(tt.m)
+			nvs := conds.VMap(tt.m)
 			assert.Len(t, nvs, len(tt.m))
 			s := fmt.Sprintf("%#v", nvs)
 			for _, i := range tt.items {
