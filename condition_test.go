@@ -15,28 +15,28 @@ func TestConditionEmpty(t *testing.T) {
 }
 
 func TestConditionEnclose(t *testing.T) {
-	c := conds.C("foo = @bar", conds.NV("bar", 100))
+	c := conds.C("foo = @bar", conds.V("bar", 100))
 	stmt, params := c.Enclose().StmtParams()
 	assert.Equal(t, "(foo = @bar)", stmt)
 	assert.Equal(t, map[string]any{"bar": 100}, params)
 }
 
 func TestIF(t *testing.T) {
-	cthen := conds.C("foo = @bar", conds.NV("bar", 100))
-	celse := conds.C("zoo = @baz", conds.NV("baz", "FOO"))
+	cthen := conds.C("foo = @bar", conds.V("bar", 100))
+	celse := conds.C("zoo = @baz", conds.V("baz", "FOO"))
 	assert.Equal(t, cthen, conds.IF(true, cthen, celse))
 	assert.Equal(t, celse, conds.IF(false, cthen, celse))
 }
 
 func TestIFTHEN(t *testing.T) {
-	cthen := conds.C("foo = @bar", conds.NV("bar", 100))
+	cthen := conds.C("foo = @bar", conds.V("bar", 100))
 	celse := conds.Empty()
 	assert.Equal(t, cthen, conds.IFTHEN(true, cthen))
 	assert.Equal(t, celse, conds.IFTHEN(false, cthen))
 }
 
 func TestIFF(t *testing.T) {
-	cthen := conds.C("foo = @bar", conds.NV("bar", 100))
+	cthen := conds.C("foo = @bar", conds.V("bar", 100))
 	celse := conds.Empty()
 	assert.Equal(t, cthen, conds.IFF(true, func() conds.Condition { return cthen }))
 	assert.Equal(t, celse, conds.IFF(false, func() conds.Condition { return cthen }))
@@ -53,14 +53,14 @@ func TestNonNil(t *testing.T) {
 	}{
 		{
 			c: conds.NonNil(&n, func(v int) conds.Condition {
-				return conds.C("foo = @n", conds.NV("n", v))
+				return conds.C("foo = @n", conds.V("n", v))
 			}),
 			stmt:   `foo = @n`,
 			params: map[string]any{"n": 100},
 		},
 		{
 			c: conds.NonNil(nilint, func(v int) conds.Condition {
-				return conds.C("bar = @nn", conds.NV("nn", v))
+				return conds.C("bar = @nn", conds.V("nn", v))
 			}),
 			empty: true,
 		},
@@ -85,27 +85,27 @@ func TestNonZero(t *testing.T) {
 	}{
 		{
 			c: conds.NonZero("str", func(v string) conds.Condition {
-				return conds.C("foo = @n", conds.NV("n", v))
+				return conds.C("foo = @n", conds.V("n", v))
 			}),
 			stmt:   `foo = @n`,
 			params: map[string]any{"n": "str"},
 		},
 		{
 			c: conds.NonZero("", func(v string) conds.Condition {
-				return conds.C("foo = @n", conds.NV("n", v))
+				return conds.C("foo = @n", conds.V("n", v))
 			}),
 			empty: true,
 		},
 		{
 			c: conds.NonZero(100, func(v int) conds.Condition {
-				return conds.C("foo = @n", conds.NV("n", v))
+				return conds.C("foo = @n", conds.V("n", v))
 			}),
 			stmt:   `foo = @n`,
 			params: map[string]any{"n": 100},
 		},
 		{
 			c: conds.NonZero(0, func(v int) conds.Condition {
-				return conds.C("foo = @n", conds.NV("n", v))
+				return conds.C("foo = @n", conds.V("n", v))
 			}),
 			empty: true,
 		},
@@ -134,38 +134,38 @@ func TestC(t *testing.T) {
 			params: map[string]any{},
 		},
 		{
-			c:      conds.C(`foo = @bar`, conds.NV("bar", "zoo")),
+			c:      conds.C(`foo = @bar`, conds.V("bar", "zoo")),
 			stmt:   `foo = @bar`,
 			params: map[string]any{"bar": "zoo"},
 		},
 		{
-			c:      conds.C(`foo IN (@bar, @zoo`, conds.NV("bar", 100), conds.NV("zoo", true)),
+			c:      conds.C(`foo IN (@bar, @zoo`, conds.V("bar", 100), conds.V("zoo", true)),
 			stmt:   `foo IN (@bar, @zoo`,
 			params: map[string]any{"bar": 100, "zoo": true},
 		},
 		{
-			c:      conds.C(`foo = @bar OR foo = @zoo`, conds.NVMap(map[string]any{"bar": 100, "zoo": true})...),
+			c:      conds.C(`foo = @bar OR foo = @zoo`, conds.VMap(map[string]any{"bar": 100, "zoo": true})...),
 			stmt:   `foo = @bar OR foo = @zoo`,
 			params: map[string]any{"bar": 100, "zoo": true},
 		},
 		{
-			c:      conds.C(`foo IN (@bar, @zoo`, conds.NV("bar", 100), conds.NV("zoo", true)),
+			c:      conds.C(`foo IN (@bar, @zoo`, conds.V("bar", 100), conds.V("zoo", true)),
 			stmt:   `foo IN (@bar, @zoo`,
 			params: map[string]any{"bar": 100, "zoo": true},
 		},
 		{
-			c:      conds.C(`foo = @bar`, conds.XNV("bar", ptr("zoo"))),
+			c:      conds.C(`foo = @bar`, conds.XV("bar", ptr("zoo"))),
 			stmt:   `foo = @bar`,
 			params: map[string]any{"bar": "zoo"},
 		},
 		{
-			c:      conds.C(`foo = @bar`, conds.XNV("bar", nilstr)),
+			c:      conds.C(`foo = @bar`, conds.XV("bar", nilstr)),
 			stmt:   ``,
 			params: nil,
 			empty:  true,
 		},
 		{
-			c:      conds.C(`foo = @bar AND zoo = @baz`, conds.NV("bar", 100), conds.XNV("baz", nilint)),
+			c:      conds.C(`foo = @bar AND zoo = @baz`, conds.V("bar", 100), conds.XV("baz", nilint)),
 			stmt:   ``,
 			params: nil,
 			empty:  true,
@@ -198,8 +198,8 @@ func TestAND(t *testing.T) {
 		{
 			cs: []conds.Condition{
 				conds.C(`foo = "bar"`),
-				conds.C(`zoo = @baz`, conds.NV("bar", "zoo")),
-				conds.C(`hoge = @fuga`, conds.NV("fuga", 100)),
+				conds.C(`zoo = @baz`, conds.V("bar", "zoo")),
+				conds.C(`hoge = @fuga`, conds.V("fuga", 100)),
 			},
 			stmt:   `foo = "bar" AND zoo = @baz AND hoge = @fuga`,
 			params: map[string]any{"bar": "zoo", "fuga": 100},
@@ -207,8 +207,8 @@ func TestAND(t *testing.T) {
 		{
 			cs: []conds.Condition{
 				conds.C(`foo = "bar"`),
-				conds.C(`zoo = @baz`, conds.NV("bar", "zoo")),
-				conds.C(`hoge = @fuga`, conds.XNV("fuga", nilint)),
+				conds.C(`zoo = @baz`, conds.V("bar", "zoo")),
+				conds.C(`hoge = @fuga`, conds.XV("fuga", nilint)),
 			},
 			stmt:   `foo = "bar" AND zoo = @baz`,
 			params: map[string]any{"bar": "zoo"},
@@ -217,10 +217,10 @@ func TestAND(t *testing.T) {
 			cs: []conds.Condition{
 				conds.C(`foo = "bar"`),
 				conds.AND(
-					conds.C(`zoo = @baz`, conds.NV("bar", "zoo")),
-					conds.C(`hello = @world`, conds.NV("hello", "world")),
+					conds.C(`zoo = @baz`, conds.V("bar", "zoo")),
+					conds.C(`hello = @world`, conds.V("hello", "world")),
 				).Enclose(),
-				conds.C(`hoge = @fuga`, conds.NV("fuga", 100)),
+				conds.C(`hoge = @fuga`, conds.V("fuga", 100)),
 			},
 			stmt:   `foo = "bar" AND (zoo = @baz AND hello = @world) AND hoge = @fuga`,
 			params: map[string]any{"bar": "zoo", "hello": "world", "fuga": 100},
@@ -229,10 +229,10 @@ func TestAND(t *testing.T) {
 			cs: []conds.Condition{
 				conds.C(`foo = "bar"`),
 				conds.OR(
-					conds.C(`zoo = @baz`, conds.NV("bar", "zoo")),
-					conds.C(`hello = @world`, conds.NV("hello", "world")),
+					conds.C(`zoo = @baz`, conds.V("bar", "zoo")),
+					conds.C(`hello = @world`, conds.V("hello", "world")),
 				).Enclose(),
-				conds.C(`hoge = @fuga`, conds.NV("fuga", 100)),
+				conds.C(`hoge = @fuga`, conds.V("fuga", 100)),
 			},
 			stmt:   `foo = "bar" AND (zoo = @baz OR hello = @world) AND hoge = @fuga`,
 			params: map[string]any{"bar": "zoo", "hello": "world", "fuga": 100},
@@ -266,8 +266,8 @@ func TestOR(t *testing.T) {
 		{
 			cs: []conds.Condition{
 				conds.C(`foo = "bar"`),
-				conds.C(`zoo = @baz`, conds.NV("bar", "zoo")),
-				conds.C(`hoge = @fuga`, conds.NV("fuga", 100)),
+				conds.C(`zoo = @baz`, conds.V("bar", "zoo")),
+				conds.C(`hoge = @fuga`, conds.V("fuga", 100)),
 			},
 			stmt:   `foo = "bar" OR zoo = @baz OR hoge = @fuga`,
 			params: map[string]any{"bar": "zoo", "fuga": 100},
@@ -275,8 +275,8 @@ func TestOR(t *testing.T) {
 		{
 			cs: []conds.Condition{
 				conds.C(`foo = "bar"`),
-				conds.C(`zoo = @baz`, conds.NV("bar", "zoo")),
-				conds.C(`hoge = @fuga`, conds.XNV("fuga", nilint)),
+				conds.C(`zoo = @baz`, conds.V("bar", "zoo")),
+				conds.C(`hoge = @fuga`, conds.XV("fuga", nilint)),
 			},
 			stmt:   `foo = "bar" OR zoo = @baz`,
 			params: map[string]any{"bar": "zoo"},
@@ -285,10 +285,10 @@ func TestOR(t *testing.T) {
 			cs: []conds.Condition{
 				conds.C(`foo = "bar"`),
 				conds.AND(
-					conds.C(`zoo = @baz`, conds.NV("bar", "zoo")),
-					conds.C(`hello = @world`, conds.NV("hello", "world")),
+					conds.C(`zoo = @baz`, conds.V("bar", "zoo")),
+					conds.C(`hello = @world`, conds.V("hello", "world")),
 				).Enclose(),
-				conds.C(`hoge = @fuga`, conds.NV("fuga", 100)),
+				conds.C(`hoge = @fuga`, conds.V("fuga", 100)),
 			},
 			stmt:   `foo = "bar" OR (zoo = @baz AND hello = @world) OR hoge = @fuga`,
 			params: map[string]any{"bar": "zoo", "hello": "world", "fuga": 100},
@@ -297,10 +297,10 @@ func TestOR(t *testing.T) {
 			cs: []conds.Condition{
 				conds.C(`foo = "bar"`),
 				conds.OR(
-					conds.C(`zoo = @baz`, conds.NV("bar", "zoo")),
-					conds.C(`hello = @world`, conds.NV("hello", "world")),
+					conds.C(`zoo = @baz`, conds.V("bar", "zoo")),
+					conds.C(`hello = @world`, conds.V("hello", "world")),
 				).Enclose(),
-				conds.C(`hoge = @fuga`, conds.NV("fuga", 100)),
+				conds.C(`hoge = @fuga`, conds.V("fuga", 100)),
 			},
 			stmt:   `foo = "bar" OR (zoo = @baz OR hello = @world) OR hoge = @fuga`,
 			params: map[string]any{"bar": "zoo", "hello": "world", "fuga": 100},
@@ -334,8 +334,8 @@ func TestConditionAND(t *testing.T) {
 		{
 			cs: []conds.Condition{
 				conds.C(`foo = "bar"`),
-				conds.C(`zoo = @baz`, conds.NV("bar", "zoo")),
-				conds.C(`hoge = @fuga`, conds.NV("fuga", 100)),
+				conds.C(`zoo = @baz`, conds.V("bar", "zoo")),
+				conds.C(`hoge = @fuga`, conds.V("fuga", 100)),
 			},
 			stmt:   `foo = "bar" AND zoo = @baz AND hoge = @fuga`,
 			params: map[string]any{"bar": "zoo", "fuga": 100},
@@ -343,8 +343,8 @@ func TestConditionAND(t *testing.T) {
 		{
 			cs: []conds.Condition{
 				conds.C(`foo = "bar"`),
-				conds.C(`zoo = @baz`, conds.NV("bar", "zoo")),
-				conds.C(`hoge = @fuga`, conds.XNV("fuga", nilint)),
+				conds.C(`zoo = @baz`, conds.V("bar", "zoo")),
+				conds.C(`hoge = @fuga`, conds.XV("fuga", nilint)),
 			},
 			stmt:   `foo = "bar" AND zoo = @baz`,
 			params: map[string]any{"bar": "zoo"},
@@ -353,10 +353,10 @@ func TestConditionAND(t *testing.T) {
 			cs: []conds.Condition{
 				conds.C(`foo = "bar"`),
 				conds.AND(
-					conds.C(`zoo = @baz`, conds.NV("bar", "zoo")),
-					conds.C(`hello = @world`, conds.NV("hello", "world")),
+					conds.C(`zoo = @baz`, conds.V("bar", "zoo")),
+					conds.C(`hello = @world`, conds.V("hello", "world")),
 				).Enclose(),
-				conds.C(`hoge = @fuga`, conds.NV("fuga", 100)),
+				conds.C(`hoge = @fuga`, conds.V("fuga", 100)),
 			},
 			stmt:   `foo = "bar" AND (zoo = @baz AND hello = @world) AND hoge = @fuga`,
 			params: map[string]any{"bar": "zoo", "hello": "world", "fuga": 100},
@@ -365,10 +365,10 @@ func TestConditionAND(t *testing.T) {
 			cs: []conds.Condition{
 				conds.C(`foo = "bar"`),
 				conds.OR(
-					conds.C(`zoo = @baz`, conds.NV("bar", "zoo")),
-					conds.C(`hello = @world`, conds.NV("hello", "world")),
+					conds.C(`zoo = @baz`, conds.V("bar", "zoo")),
+					conds.C(`hello = @world`, conds.V("hello", "world")),
 				).Enclose(),
-				conds.C(`hoge = @fuga`, conds.NV("fuga", 100)),
+				conds.C(`hoge = @fuga`, conds.V("fuga", 100)),
 			},
 			stmt:   `foo = "bar" AND (zoo = @baz OR hello = @world) AND hoge = @fuga`,
 			params: map[string]any{"bar": "zoo", "hello": "world", "fuga": 100},
@@ -405,8 +405,8 @@ func TestConditionOR(t *testing.T) {
 		{
 			cs: []conds.Condition{
 				conds.C(`foo = "bar"`),
-				conds.C(`zoo = @baz`, conds.NV("bar", "zoo")),
-				conds.C(`hoge = @fuga`, conds.NV("fuga", 100)),
+				conds.C(`zoo = @baz`, conds.V("bar", "zoo")),
+				conds.C(`hoge = @fuga`, conds.V("fuga", 100)),
 			},
 			stmt:   `foo = "bar" OR zoo = @baz OR hoge = @fuga`,
 			params: map[string]any{"bar": "zoo", "fuga": 100},
@@ -414,8 +414,8 @@ func TestConditionOR(t *testing.T) {
 		{
 			cs: []conds.Condition{
 				conds.C(`foo = "bar"`),
-				conds.C(`zoo = @baz`, conds.NV("bar", "zoo")),
-				conds.C(`hoge = @fuga`, conds.XNV("fuga", nilint)),
+				conds.C(`zoo = @baz`, conds.V("bar", "zoo")),
+				conds.C(`hoge = @fuga`, conds.XV("fuga", nilint)),
 			},
 			stmt:   `foo = "bar" OR zoo = @baz`,
 			params: map[string]any{"bar": "zoo"},
@@ -424,10 +424,10 @@ func TestConditionOR(t *testing.T) {
 			cs: []conds.Condition{
 				conds.C(`foo = "bar"`),
 				conds.AND(
-					conds.C(`zoo = @baz`, conds.NV("bar", "zoo")),
-					conds.C(`hello = @world`, conds.NV("hello", "world")),
+					conds.C(`zoo = @baz`, conds.V("bar", "zoo")),
+					conds.C(`hello = @world`, conds.V("hello", "world")),
 				).Enclose(),
-				conds.C(`hoge = @fuga`, conds.NV("fuga", 100)),
+				conds.C(`hoge = @fuga`, conds.V("fuga", 100)),
 			},
 			stmt:   `foo = "bar" OR (zoo = @baz AND hello = @world) OR hoge = @fuga`,
 			params: map[string]any{"bar": "zoo", "hello": "world", "fuga": 100},
@@ -436,10 +436,10 @@ func TestConditionOR(t *testing.T) {
 			cs: []conds.Condition{
 				conds.C(`foo = "bar"`),
 				conds.OR(
-					conds.C(`zoo = @baz`, conds.NV("bar", "zoo")),
-					conds.C(`hello = @world`, conds.NV("hello", "world")),
+					conds.C(`zoo = @baz`, conds.V("bar", "zoo")),
+					conds.C(`hello = @world`, conds.V("hello", "world")),
 				).Enclose(),
-				conds.C(`hoge = @fuga`, conds.NV("fuga", 100)),
+				conds.C(`hoge = @fuga`, conds.V("fuga", 100)),
 			},
 			stmt:   `foo = "bar" OR (zoo = @baz OR hello = @world) OR hoge = @fuga`,
 			params: map[string]any{"bar": "zoo", "hello": "world", "fuga": 100},
@@ -462,9 +462,9 @@ func TestConditionOR(t *testing.T) {
 
 func TestConditionAND_C(t *testing.T) {
 	c := conds.C(`foo = "bar"`).
-		AND_C(`zoo = @baz`, conds.NV("bar", "zoo")).
-		AND_C(`hoge = @fuga`, conds.NV("fuga", 100)).
-		AND_C(`hello = @world`, conds.XNV("world", nilstr))
+		AND_C(`zoo = @baz`, conds.V("bar", "zoo")).
+		AND_C(`hoge = @fuga`, conds.V("fuga", 100)).
+		AND_C(`hello = @world`, conds.XV("world", nilstr))
 
 	stmt, params := c.StmtParams()
 	assert.Equal(t, `foo = "bar" AND zoo = @baz AND hoge = @fuga`, stmt)
@@ -473,9 +473,9 @@ func TestConditionAND_C(t *testing.T) {
 
 func TestConditionOR_C(t *testing.T) {
 	c := conds.C(`foo = "bar"`).
-		OR_C(`zoo = @baz`, conds.NV("bar", "zoo")).
-		OR_C(`hoge = @fuga`, conds.NV("fuga", 100)).
-		OR_C(`hello = @world`, conds.XNV("world", nilint))
+		OR_C(`zoo = @baz`, conds.V("bar", "zoo")).
+		OR_C(`hoge = @fuga`, conds.V("fuga", 100)).
+		OR_C(`hello = @world`, conds.XV("world", nilint))
 
 	stmt, params := c.StmtParams()
 	assert.Equal(t, `foo = "bar" OR zoo = @baz OR hoge = @fuga`, stmt)
@@ -484,7 +484,7 @@ func TestConditionOR_C(t *testing.T) {
 
 func TestStmtParams(t *testing.T) {
 	type testMap map[string]any
-	c := conds.C("foo = @bar", conds.NV("bar", 100))
+	c := conds.C("foo = @bar", conds.V("bar", 100))
 	stmt, params := conds.StmtParams[testMap](c)
 	assert.Equal(t, "foo = @bar", stmt)
 	assert.Equal(t, testMap{"bar": 100}, params)
